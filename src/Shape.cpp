@@ -1,12 +1,6 @@
 #include "Shape.h"
-#include "cinder/app/AppBasic.h"
-#include "cinder/gl/gl.h"
 
-using namespace ci;
-using namespace ci::app;
-using namespace std;
-
-//int shapeType = 0;
+int shapeType = 0;
 
 Shape::Shape(int x, int y, int radius)
 {
@@ -14,9 +8,9 @@ Shape::Shape(int x, int y, int radius)
 
 	switch(shapeType)
 	{
-		case 1 : rectangle(x, y, radius);
+		case 1 : rectangle(int x, int y, int radius);
 			break;
-		case 2 : circle(x, y, radius);
+		case 2 : circle(int x, int y, int radius);
 			break;
 	}
 
@@ -42,5 +36,5 @@ void Shape::draw()
 {
 	if(shapeType == 1)
 	{
-	}
+
 }

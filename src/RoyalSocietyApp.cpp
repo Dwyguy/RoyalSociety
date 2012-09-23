@@ -1,6 +1,9 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
+#include "Resources.h"
+#include "cinder\ImageIo.h"
+#include "cinder/CinderResources.h"
 #include "Node.h"
 #include "Shape.h"
 
@@ -35,7 +38,7 @@ class RoyalSocietyApp : public AppBasic {
 	This method was copied over from a previous project,
 	which can be found here: https://github.com/Dwyguy/CatPicture
 	*/
-	void drawRectangle(uint8_t* surfaceArray, int x1, int y1, int x2, int y2, Color8u c);
+	void drawRectangle(uint8_t* surfaceArray, int x1, int y1, int x2, int y2);
 
 	/**
 	Draws a circle on the screen.
@@ -48,7 +51,7 @@ class RoyalSocietyApp : public AppBasic {
 	This method was copied over from a previous project,
 	which can be found here: https://github.com/Dwyguy/CatPicture
 	*/
-	void drawCircle(uint8_t* surfaceArray, int centerX, int centerY, int radius, Color8u c);
+	void drawCircle(uint8_t* surfaceArray, int centerX, int centerY, int radius);
 
 	void drawGradient(uint8_t* surfaceArray);
 };
@@ -62,10 +65,9 @@ void RoyalSocietyApp::prepareSettings(Settings* settings)
 void RoyalSocietyApp::setup()
 {
 	sentinel = new Node();
-	//Shape* sentinelShape = new Shape();
 	sentinel->next_ = sentinel;
 	sentinel->prev_ = sentinel;
-	sentinel->shape = new Shape();
+	//sentinel->shape = new Shape((rand()%150) + 50, (rand()%150) + 50, (rand()%150) + 50);
 
 	mySurface_ = new Surface(surfaceSize_, surfaceSize_, false);
 	nodeCount_ = 1;
@@ -75,7 +77,7 @@ void RoyalSocietyApp::setup()
 
 }
 
-void RoyalSocietyApp::drawRectangle(uint8_t* surfaceArray, int x1, int y1, int x2, int y2, Color8u c)
+void RoyalSocietyApp::drawRectangle(uint8_t* surfaceArray, int x1, int y1, int x2, int y2)//, Color8u c)
 {
 	int startX = (x1 < x2) ? x1 : x2;
 	int endX = (x1 < x2) ? x2 : x1;
@@ -98,14 +100,14 @@ void RoyalSocietyApp::drawRectangle(uint8_t* surfaceArray, int x1, int y1, int x
 		{
 			int ribbon = 3 * (x + y * surfaceSize_);
 
-			surfaceArray[ribbon] = c.r;
-			surfaceArray[ribbon + 1] = c.g;
-			surfaceArray[ribbon + 2] = c.b;
+			surfaceArray[ribbon] = 0;//c.r;
+			surfaceArray[ribbon + 1] = 0;//c.g;
+			surfaceArray[ribbon + 2] = 0;//c.b;
 		}
 	}
 }
 
-void RoyalSocietyApp::drawCircle(uint8_t* surfaceArray, int centerX, int centerY, int radius, Color8u c)
+void RoyalSocietyApp::drawCircle(uint8_t* surfaceArray, int centerX, int centerY, int radius)
 {
 	// Make sure the radius isn't negative
 	if(radius < 0)
@@ -131,9 +133,9 @@ void RoyalSocietyApp::drawCircle(uint8_t* surfaceArray, int centerX, int centerY
 			if(distance <= radius)
 			{
 				int ribbon = 3 * (x + y * surfaceSize_);
-				surfaceArray[ribbon] = c.r;
-				surfaceArray[ribbon + 1] = c.g;
-				surfaceArray[ribbon + 2] = c.b;
+				surfaceArray[ribbon] = 0;//c.r;
+				surfaceArray[ribbon + 1] = 0;//c.g;
+				surfaceArray[ribbon + 2] = 0;//c.b;
 			}
 		}
 	}
@@ -166,6 +168,10 @@ void RoyalSocietyApp::mouseDown( MouseEvent event )
 void RoyalSocietyApp::update()
 {
 	uint8_t* surfaceArray = (*mySurface_).getData();
+	//if(sentinel->shape->shapeType == 1)
+	{
+		drawRectangle(surfaceArray, sentinel->shape->x, sentinel->shape->y, sentinel->shape->x + 30, sentinel->shape->y + 30);
+	}
 }
 
 void RoyalSocietyApp::draw()
