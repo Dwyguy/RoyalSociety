@@ -1,5 +1,8 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Texture.h"
+#include "Node.h"
+#include "Shape.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -11,11 +14,150 @@ class RoyalSocietyApp : public AppBasic {
 	void mouseDown( MouseEvent event );	
 	void update();
 	void draw();
+	void prepareSettings(Settings* settings);
+  
+  private:
+	Node* sentinel;
+	Surface* mySurface_;
+	int nodeCount_;
+
+	static const int appWidth_ = 800;
+	static const int appHeight_ = 600;
+	static const int surfaceSize_ = 1024;
+
+	/**
+	Draws a rectangle on the screen.
+	@param surfaceArray - A uint8_t array that gets the current Surface of the screen.
+	@param x1, x2, y1, y2 - A starting or ending point of the rectangle, depending on their
+		locations.
+	@param c - A color parameter to set the color of the rectangle
+
+	This method was copied over from a previous project,
+	which can be found here: https://github.com/Dwyguy/CatPicture
+	*/
+	void drawRectangle(uint8_t* surfaceArray, int x1, int y1, int x2, int y2, Color8u c);
+
+	/**
+	Draws a circle on the screen.
+	@param surfaceArray - A uint8_t array that gets the current Surface of the screen.
+	@param centerX - The x-coordinate of the center of the circle
+	@param centerY - The y-coordinate of the center of the circle
+	@param radius - The radius of the circle
+	@param c - A color parameter to set the color of the rectangle
+
+	This method was copied over from a previous project,
+	which can be found here: https://github.com/Dwyguy/CatPicture
+	*/
+	void drawCircle(uint8_t* surfaceArray, int centerX, int centerY, int radius, Color8u c);
+
+	void drawGradient(uint8_t* surfaceArray);
 };
+
+void RoyalSocietyApp::prepareSettings(Settings* settings)
+{
+	(*settings).setWindowSize(appWidth_, appHeight_);
+	(*settings).setResizable(false);
+}
 
 void RoyalSocietyApp::setup()
 {
+	sentinel = new Node();
+	//Shape* sentinelShape = new Shape();
+	sentinel->next_ = sentinel;
+	sentinel->prev_ = sentinel;
+	sentinel->shape = new Shape();
+
+	mySurface_ = new Surface(surfaceSize_, surfaceSize_, false);
+	nodeCount_ = 1;
+
+	uint8_t* surfaceArray = (*mySurface_).getData();
+	drawGradient(surfaceArray); // Doing this just to give a nice gradient background
+
 }
+
+void RoyalSocietyApp::drawRectangle(uint8_t* surfaceArray, int x1, int y1, int x2, int y2, Color8u c)
+{
+	int startX = (x1 < x2) ? x1 : x2;
+	int endX = (x1 < x2) ? x2 : x1;
+	int startY = (y1 < y2) ? y1 : y2;
+	int endY = (y1 < y2) ? y2 : y1;
+
+	if(endX < 0 || endY < 0)
+		return;
+	if(startX > appWidth_ || startY > appHeight_)
+		return;
+	if(endX >= appWidth_)
+		endX = appWidth_ - 1;
+	if(endY >= appHeight_)
+		endY = appHeight_ - 1;
+
+	// 100 means 100 pixels down
+	for(int y = startY; y <= endY; y++)
+	{
+		for(int x = startX; x <= endX; x++)
+		{
+			int ribbon = 3 * (x + y * surfaceSize_);
+
+			surfaceArray[ribbon] = c.r;
+			surfaceArray[ribbon + 1] = c.g;
+			surfaceArray[ribbon + 2] = c.b;
+		}
+	}
+}
+
+void RoyalSocietyApp::drawCircle(uint8_t* surfaceArray, int centerX, int centerY, int radius, Color8u c)
+{
+	// Make sure the radius isn't negative
+	if(radius < 0)
+		return;
+
+	//Color8u c = Color8u(0, 255, 0);
+
+	// As a not for interesting effects later, if you get rid of the
+	// "- radius" in the initialization of the loop control variables
+	// you get only a quarter of the circle (bottom right quadrant)
+
+	for(int y = centerY - radius; y <= centerY + radius; y++)
+	{
+		for(int x = centerX - radius; x <= centerX + radius; x++)
+		{
+			// Taken by Prof. Brinkman's suggestion in his code to make sure
+			// the array isn't accessed out of bounds (see documentation at top)
+			if(y < 0 || x < 0 || x >= appWidth_ || y >= appHeight_)
+				continue;
+
+			int distance = (int)sqrt(pow((x - centerX), 2.0)  + pow((y - centerY), 2.0));
+
+			if(distance <= radius)
+			{
+				int ribbon = 3 * (x + y * surfaceSize_);
+				surfaceArray[ribbon] = c.r;
+				surfaceArray[ribbon + 1] = c.g;
+				surfaceArray[ribbon + 2] = c.b;
+			}
+		}
+	}
+
+}
+
+void RoyalSocietyApp::drawGradient(uint8_t* surfaceArray)
+{
+	Color8u c = Color8u(0, 0, 0);
+	
+	for(int y = 0; y < surfaceSize_; y++)
+	{
+		for(int x = 0; x < appWidth_; x++)
+		{
+			int ribbon = 3 * (x + y * surfaceSize_);
+			int special = (int)((256 * x) / appWidth_);
+
+			surfaceArray[ribbon] = c.r ;//+ special;
+			surfaceArray[ribbon + 1] = c.g;// + special;
+			surfaceArray[ribbon + 2] = c.b + special;		
+		}
+	}
+}
+
 
 void RoyalSocietyApp::mouseDown( MouseEvent event )
 {
@@ -23,12 +165,12 @@ void RoyalSocietyApp::mouseDown( MouseEvent event )
 
 void RoyalSocietyApp::update()
 {
+	uint8_t* surfaceArray = (*mySurface_).getData();
 }
 
 void RoyalSocietyApp::draw()
 {
-	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) ); 
+	gl::draw(*mySurface_);
 }
 
 CINDER_APP_BASIC( RoyalSocietyApp, RendererGl )
