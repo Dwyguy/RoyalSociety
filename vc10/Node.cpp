@@ -22,11 +22,12 @@ void Node::insert_after(Node* insert, Node* sentinel)
 
 void Node::reverse(Node* sentinel)
 {
+	Node* temp;
 	Node* cur = sentinel;
 
 	do
 	{
-		Node* temp = cur->next_;
+		temp = cur->next_;
 		cur->next_ = cur->prev_;
 		cur->prev_ = temp;
 		cur = cur->prev_;
