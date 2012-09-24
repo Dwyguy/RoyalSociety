@@ -9,13 +9,26 @@ using namespace std;
 Node::Node()
 {
 	next_ = prev_ = this;
-	shape = new Shape((rand()%800 + 1), (rand()%600 + 1), (rand()%300 + 1));
+	shape = new Shape((rand()%800 + 1), (rand()%600 + 1), (rand()%200 + 1));
 }
 
-void Node::insert_after(Node* current, Shape* shape)
+void Node::insert_after(Node* insert, Node* sentinel)
 {
-	Node* insertedNode = new Node();
-	insertedNode->shape = shape;
-	insertedNode->next_ = current->next_;
-	current->next_ = insertedNode;
+	Node* temp = sentinel->prev_;
+	insert->next_ = sentinel;
+	insert->prev_ = temp;
+	insert->prev_->next_ = insert;
+}
+
+void Node::reverse(Node* sentinel)
+{
+	Node* cur = sentinel;
+
+	do
+	{
+		Node* temp = cur->next_;
+		cur->next_ = cur->prev_;
+		cur->prev_ = temp;
+		cur = cur->prev_;
+	}while(cur != sentinel);
 }

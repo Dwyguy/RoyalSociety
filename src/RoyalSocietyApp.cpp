@@ -15,6 +15,7 @@ class RoyalSocietyApp : public AppBasic {
   public:
 	void setup();
 	void mouseDown( MouseEvent event );	
+	void keyDown(KeyEvent event);
 	void update();
 	void draw();
 	void prepareSettings(Settings* settings);
@@ -171,11 +172,20 @@ void RoyalSocietyApp::mouseDown( MouseEvent event )
 {
 	uint8_t* surfaceArray = (*mySurface_).getData();
 	Node* newNode = new Node();
-	sentinel->insert_after(newNode, newNode->shape);
+	sentinel->insert_after(newNode, sentinel);
 	if(sentinel->shape->type == 1)
 	{
 		drawRectangle(surfaceArray, newNode->shape->x, newNode->shape->y, newNode->shape->radius * 1.5, newNode->shape->radius);
 	}
+}
+
+void RoyalSocietyApp::keyDown(KeyEvent event)
+{
+	if(event.getCode() == KeyEvent::KEY_SPACE)
+	{
+		sentinel->reverse(sentinel);
+	}
+
 }
 
 void RoyalSocietyApp::update()
@@ -188,11 +198,6 @@ void RoyalSocietyApp::update()
 		drawRectangle(surfaceArray, temp->shape->x, temp->shape->y, temp->shape->radius * 1.5, temp->shape->radius);
 		temp = temp->next_;
 	}
-
-	/*if(sentinel->shape->type == 1)
-	{
-		drawRectangle(surfaceArray, sentinel->shape->x, sentinel->shape->y, sentinel->shape->radius * 1.5, sentinel->shape->radius);
-	}*/
 }
 
 void RoyalSocietyApp::draw()
