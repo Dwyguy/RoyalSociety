@@ -60,7 +60,7 @@ class RoyalSocietyApp : public AppBasic {
 
 	void drawGradient(uint8_t* surfaceArray);
 	void findClickedRectangle(int x, int y);
-	void ascend(Node* current);
+	void ascend();
 };
 
 void RoyalSocietyApp::prepareSettings(Settings* settings)
@@ -177,37 +177,22 @@ void RoyalSocietyApp::drawGradient(uint8_t* surfaceArray)
 	}
 }
 
-void RoyalSocietyApp::findClickedRectangle(int x, int y)
+void RoyalSocietyApp::ascend()
 {
-	Node* current = sentinel->prev_;
-	int xcoord, ycoord, length, width;
+	Node* current = sentinel->next_;
+	sentinel->next_ = current->next_;
+	sentinel->next_->prev_ = sentinel;
+	sentinel->insert_after(current, sentinel);
 
-	while(current != sentinel)
-	{
-		xcoord = current->shape->x;
-		ycoord = current->shape->y;
-		length = current->shape->radius * 1.5 + xcoord;
-		width = current->shape->radius + ycoord;
-
-		if(x > xcoord && x < width && x > ycoord && x < length)
-		{
-			current->insert_after(current, sentinel);
-			current = sentinel;
-		}
-		current = current->prev_;
-	}
 }
 
-void RoyalSocietyApp::ascend(Node* current)
-{
-	current->next_->prev_ = current->prev_;
-	current->prev_->next_ = current->next_;
-
-}
 
 void RoyalSocietyApp::mouseDown( MouseEvent event )
 {
 	uint8_t* surfaceArray = (*mySurface_).getData();
+
+	bool shapeClicked = false;
+
 	Node* newNode = new Node();
 	sentinel->insert_after(newNode, sentinel);
 	if(sentinel->shape->type == 1)
@@ -238,6 +223,9 @@ void RoyalSocietyApp::keyDown(KeyEvent event)
 		sentinel->reverse(sentinel);
 	}
 
+	if(event.getCode() == KeyEvent::KEY_UP)
+		ascend();
+
 }
 
 void RoyalSocietyApp::update()
@@ -245,11 +233,6 @@ void RoyalSocietyApp::update()
 	uint8_t* surfaceArray = (*mySurface_).getData();
 
 	Node* temp = sentinel->next_;
-	
-	if(temp == sentinel)
-	{
-		//drawRectangle(surfaceArray, temp->shape->x, temp->shape->y, temp->shape->radius * 1.5, temp->shape->radius);
-	}
 
 	while(temp != sentinel)
 	{

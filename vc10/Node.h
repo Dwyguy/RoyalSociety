@@ -10,7 +10,7 @@ class Node
 
 	// Note: Probably a poor idea to not have some of this private
 	// but then the program will not work
-	void insert_after(Node*, Node*);
+	void insert_after(Node* current, Node* sentinel);
 	void reverse(Node* sentinel);
 	//void remove();
 
