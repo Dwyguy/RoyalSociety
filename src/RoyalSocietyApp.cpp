@@ -193,6 +193,12 @@ void RoyalSocietyApp::update()
 	uint8_t* surfaceArray = (*mySurface_).getData();
 
 	Node* temp = sentinel->next_;
+	
+	if(temp == sentinel)
+	{
+		drawRectangle(surfaceArray, temp->shape->x, temp->shape->y, temp->shape->radius * 1.5, temp->shape->radius);
+	}
+
 	while(temp != sentinel)
 	{
 		drawRectangle(surfaceArray, temp->shape->x, temp->shape->y, temp->shape->radius * 1.5, temp->shape->radius);
