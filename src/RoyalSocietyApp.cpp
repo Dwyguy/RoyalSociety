@@ -27,7 +27,8 @@ class RoyalSocietyApp : public AppBasic {
 	Surface* mySurface_;
 	Font* font;
 	float brightness, greenValue;
-	bool showMenu;
+	bool showMenu, raveMode;
+	int shift;
 
 	static const int appWidth_ = 800;
 	static const int appHeight_ = 600;
@@ -76,18 +77,17 @@ void RoyalSocietyApp::setup()
 	brightness = 0.0;
 	greenValue = 0.0;
 	showMenu = true;
+	raveMode = false;
+	shift = 0;
 
 	sentinel = new Node();
 	sentinel->next_ = sentinel;
 	sentinel->prev_ = sentinel;
-	//sentinel->shape = new Shape((rand()%150) + 50, (rand()%150) + 50, (rand()%150) + 50);
 
 	mySurface_ = new Surface(surfaceSize_, surfaceSize_, false);
-	//nodeCount_ = 1;
 
 	uint8_t* surfaceArray = (*mySurface_).getData();
 	drawGradient(surfaceArray); // Doing this just to give a nice gradient background
-
 }
 
 void RoyalSocietyApp::drawRectangle(uint8_t* surfaceArray, int x1, int y1, int x2, int y2)//, Color8u c)
@@ -97,13 +97,26 @@ void RoyalSocietyApp::drawRectangle(uint8_t* surfaceArray, int x1, int y1, int x
 	int startY = (y1 < y2) ? y1 : y2;
 	int endY = (y1 < y2) ? y2 : y1;
 
-	int r = rand()%255;
-	int g = rand()%255;
-	int b = rand()%255;
+	int r, g ,b;
+
+	if(raveMode)
+	{
+		r = rand()%255;
+		g = rand()%255;
+		b = rand()%255;
+	}
+	else
+	{
+		r = startX;
+		g = endX;
+		b = startY;
+	}
 
 	if(endX < 0 || endY < 0)
 		return;
 	if(startX > appWidth_ || startY > appHeight_)
+		return;
+	if(startY <= 0 || endY <= 0)
 		return;
 	if(endX >= appWidth_)
 		endX = appWidth_ - 1;
@@ -124,40 +137,7 @@ void RoyalSocietyApp::drawRectangle(uint8_t* surfaceArray, int x1, int y1, int x
 	}
 }
 
-void RoyalSocietyApp::drawCircle(uint8_t* surfaceArray, int centerX, int centerY, int radius)
-{
-	// Make sure the radius isn't negative
-	if(radius < 0)
-		return;
 
-	//Color8u c = Color8u(0, 255, 0);
-
-	// As a not for interesting effects later, if you get rid of the
-	// "- radius" in the initialization of the loop control variables
-	// you get only a quarter of the circle (bottom right quadrant)
-
-	for(int y = centerY - radius; y <= centerY + radius; y++)
-	{
-		for(int x = centerX - radius; x <= centerX + radius; x++)
-		{
-			// Taken by Prof. Brinkman's suggestion in his code to make sure
-			// the array isn't accessed out of bounds (see documentation at top)
-			if(y < 0 || x < 0 || x >= appWidth_ || y >= appHeight_)
-				continue;
-
-			int distance = (int)sqrt(pow((x - centerX), 2.0)  + pow((y - centerY), 2.0));
-
-			if(distance <= radius)
-			{
-				int ribbon = 3 * (x + y * surfaceSize_);
-				surfaceArray[ribbon] = 0;//c.r;
-				surfaceArray[ribbon + 1] = 0;//c.g;
-				surfaceArray[ribbon + 2] = 0;//c.b;
-			}
-		}
-	}
-
-}
 
 void RoyalSocietyApp::drawGradient(uint8_t* surfaceArray)
 {
@@ -183,7 +163,6 @@ void RoyalSocietyApp::ascend()
 	sentinel->next_ = current->next_;
 	sentinel->next_->prev_ = sentinel;
 	sentinel->insert_after(current, sentinel);
-
 }
 
 
@@ -198,11 +177,6 @@ void RoyalSocietyApp::mouseDown( MouseEvent event )
 	if(sentinel->shape->type == 1)
 	{
 		drawRectangle(surfaceArray, newNode->shape->x, newNode->shape->y, newNode->shape->radius * 1.5, newNode->shape->radius);
-	}
-
-	if(event.isLeftDown())
-	{
-	//	findClickedRectangle(event.getX(), event.getY());
 	}
 }
 
@@ -226,17 +200,32 @@ void RoyalSocietyApp::keyDown(KeyEvent event)
 	if(event.getCode() == KeyEvent::KEY_UP)
 		ascend();
 
+	if(event.getCode() == KeyEvent::KEY_LEFT && shift > -300 && shift < 300)
+		shift--;
+	if(event.getCode() == KeyEvent::KEY_RIGHT && shift > -300 && shift < 300)
+		shift++;
+	if(shift >= 300 || shift <= -300)
+		shift = 0;
+
+	if(event.getChar() == 'r')
+	{
+		if(raveMode)
+			raveMode = false;
+		else
+			raveMode = true;
+	}
+
 }
 
 void RoyalSocietyApp::update()
 {
 	uint8_t* surfaceArray = (*mySurface_).getData();
-
+	
 	Node* temp = sentinel->next_;
 
 	while(temp != sentinel)
 	{
-		drawRectangle(surfaceArray, temp->shape->x, temp->shape->y, temp->shape->radius * 1.5, temp->shape->radius);
+		drawRectangle(surfaceArray, temp->shape->x + shift, temp->shape->y + shift, temp->shape->radius * 1.5 + shift, temp->shape->radius);
 		temp = temp->next_;
 	}
 }
@@ -265,10 +254,13 @@ void RoyalSocietyApp::draw()
 	if(showMenu)
 	{
 		gl::clear(Color(0,0,0));
-		gl::drawString("Welcome to the Royal Society!", Vec2f(250.0f,100.0f),Color(brightness,greenValue,0.0f), *font);
-		gl::drawString("Press '?' to turn this menu off and on.", Vec2f(200.0f,150.0f),Color(brightness,greenValue,0.0f), *font);
-		gl::drawString("Click to create new shapes on the screen!", Vec2f(180.0f,200.0f),Color(brightness,greenValue,0.0f), *font);
-		gl::drawString("Want to reverse the order of the shapes? Hit spacebar.", Vec2f(100.0f,250.0f),Color(brightness,greenValue,0.0f), *font);
+		gl::drawString("Welcome to the Royal Society!", Vec2f(245.0f,100.0f),Color(brightness,greenValue,0.0f), *font);
+		gl::drawString("Press '?' to turn this menu off and on.", Vec2f(215.0f,140.0f),Color(brightness,greenValue,0.0f), *font);
+		gl::drawString("Click to create new shapes on the screen!", Vec2f(200.0f,180.0f),Color(brightness,greenValue,0.0f), *font);
+		gl::drawString("Want to reverse the order of the shapes? Hit spacebar.", Vec2f(130.0f,220.0f),Color(brightness,greenValue,0.0f), *font);
+		gl::drawString("Bringing the bottom shape to the top? Use the up arrow.", Vec2f(120.0f,260.0f),Color(brightness,greenValue,0.0f), *font);
+		gl::drawString("Use the left and right arrows to make some interesting colors and effects.", Vec2f(30.0f,300.0f),Color(brightness,greenValue,0.0f), *font);
+		gl::drawString("PRESS 'R' FOR RAVE MODE!!", Vec2f(250.0f,340.0f),Color(brightness,greenValue,0.0f), *font);
 	}
 	else
 	{
