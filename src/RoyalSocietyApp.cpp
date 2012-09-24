@@ -23,7 +23,9 @@ class RoyalSocietyApp : public AppBasic {
   private:
 	Node* sentinel;
 	Surface* mySurface_;
-	int nodeCount_;
+	Font* font;
+	float brightness, greenValue;
+	bool showMenu;
 
 	static const int appWidth_ = 800;
 	static const int appHeight_ = 600;
@@ -66,6 +68,10 @@ void RoyalSocietyApp::prepareSettings(Settings* settings)
 void RoyalSocietyApp::setup()
 {
 	srand(time(0));
+	font = new Font("Palatino Linotype",30);
+	brightness = 0.0;
+	greenValue = 0.0;
+	showMenu = true;
 
 	sentinel = new Node();
 	sentinel->next_ = sentinel;
@@ -73,7 +79,7 @@ void RoyalSocietyApp::setup()
 	//sentinel->shape = new Shape((rand()%150) + 50, (rand()%150) + 50, (rand()%150) + 50);
 
 	mySurface_ = new Surface(surfaceSize_, surfaceSize_, false);
-	nodeCount_ = 1;
+	//nodeCount_ = 1;
 
 	uint8_t* surfaceArray = (*mySurface_).getData();
 	drawGradient(surfaceArray); // Doing this just to give a nice gradient background
@@ -186,6 +192,15 @@ void RoyalSocietyApp::keyDown(KeyEvent event)
 		sentinel->reverse(sentinel);
 	}
 
+	if(event.getChar() == '?' || event.getChar() == '/' && showMenu == true)
+	{
+		showMenu == false;
+	}
+	else if(event.getChar() == '?' || event.getChar() == '/' && showMenu == false)
+	{
+		showMenu == true;
+	}
+
 }
 
 void RoyalSocietyApp::update()
@@ -208,7 +223,36 @@ void RoyalSocietyApp::update()
 
 void RoyalSocietyApp::draw()
 {
-	gl::draw(*mySurface_);
+	if(brightness < 1.0f && greenValue <= 0.0f)
+	{
+		brightness += 0.01f; // Raise red
+	}
+	else if(brightness >= 1.0f && greenValue < 1.0f)
+	{
+		//brightness = 1.0f;
+		greenValue += 0.01f; // Raise to yellow
+	}
+	else if(greenValue >= 1.0f && brightness > 0.0f)
+	{
+		brightness -= 0.01f;
+	}
+	else if(greenValue > 0.0f)
+	{
+		//brightness = 0.0;
+		greenValue -= 0.01f;
+		brightness += 0.01f;
+	}
+
+	if(showMenu == true)
+	{
+		gl::drawString("Welcome to the Royal Society!", Vec2f(250.0f,100.0f),Color(brightness,greenValue,0.0f), *font);
+		gl::drawString("Press '?' to turn this menu off and on.", Vec2f(200.0f,200.0f),Color(brightness,greenValue,0.0f), *font);
+	}
+	else
+	{
+		gl::clear(Color( 255, 255, 255 ));
+		gl::draw(*mySurface_);
+	}
 }
 
 CINDER_APP_BASIC( RoyalSocietyApp, RendererGl )
