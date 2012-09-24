@@ -4,6 +4,8 @@
 #include "Resources.h"
 #include "cinder\ImageIo.h"
 #include "cinder/CinderResources.h"
+#include "cinder/app/KeyEvent.h"
+#include "cinder/Text.h"
 #include "Node.h"
 #include "Shape.h"
 
@@ -187,18 +189,19 @@ void RoyalSocietyApp::mouseDown( MouseEvent event )
 
 void RoyalSocietyApp::keyDown(KeyEvent event)
 {
+	char yup = event.getChar();
+	char yup2 = 'a';
+	if(yup == '/' || event.getChar() == '?')
+	{
+		if(showMenu)
+			showMenu == false;
+		else
+			showMenu == true;
+	}
+
 	if(event.getCode() == KeyEvent::KEY_SPACE)
 	{
 		sentinel->reverse(sentinel);
-	}
-
-	if(event.getChar() == '?' || event.getChar() == '/' && showMenu == true)
-	{
-		showMenu == false;
-	}
-	else if(event.getChar() == '?' || event.getChar() == '/' && showMenu == false)
-	{
-		showMenu == true;
 	}
 
 }
@@ -243,7 +246,7 @@ void RoyalSocietyApp::draw()
 		brightness += 0.01f;
 	}
 
-	if(showMenu == true)
+	if(showMenu == false)
 	{
 		gl::drawString("Welcome to the Royal Society!", Vec2f(250.0f,100.0f),Color(brightness,greenValue,0.0f), *font);
 		gl::drawString("Press '?' to turn this menu off and on.", Vec2f(200.0f,200.0f),Color(brightness,greenValue,0.0f), *font);
