@@ -21,25 +21,3 @@ Shape::Shape(int x, int y, int radius)
 	}
 
 }
-
-void Shape::rectangle(int ex, int ey, int eradius)
-{
-	x = ex;
-	y = ey;
-	radius = eradius; // Radius in this case means length of the rectangle
-	//shapeType = 1;
-}
-
-void Shape::circle(int x, int y, int radius)
-{
-	// x is the radius
-	x = (rand()%100) + 50;
-	type = 2;
-}
-
-void Shape::draw()
-{
-	if(type == 1)
-	{
-	}
-}
