@@ -30,7 +30,9 @@ void Shape::rectangle(int ex, int ey, int eradius)
 	//shapeType = 1;
 }
 
-void Shape::circle(int x, int y, int radius)
+void Shape::circle(int ex, int ey, int eradius)
 {
-	
+	x = ex;
+	y = ey;
+	radius = eradius;
 }

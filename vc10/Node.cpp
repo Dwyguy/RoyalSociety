@@ -14,10 +14,15 @@ Node::Node()
 
 void Node::insert_after(Node* insert, Node* sentinel)
 {
-	Node* temp = sentinel->prev_;
+	insert->next_ = sentinel;
+	insert->prev_ = sentinel->prev_;
+	sentinel->prev_->next_ = insert;
+	sentinel->prev_ = insert;
+	/*Node* temp = sentinel->prev_;
 	insert->next_ = sentinel;
 	insert->prev_ = temp;
-	insert->prev_->next_ = insert;
+	//insert->prev_->next_ = insert;
+	sentinel->prev_ = insert;*/
 }
 
 void Node::reverse(Node* sentinel)

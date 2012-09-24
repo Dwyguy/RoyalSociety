@@ -59,6 +59,8 @@ class RoyalSocietyApp : public AppBasic {
 	void drawCircle(uint8_t* surfaceArray, int centerX, int centerY, int radius);
 
 	void drawGradient(uint8_t* surfaceArray);
+	void findClickedRectangle(int x, int y);
+	void ascend(Node* current);
 };
 
 void RoyalSocietyApp::prepareSettings(Settings* settings)
@@ -175,6 +177,33 @@ void RoyalSocietyApp::drawGradient(uint8_t* surfaceArray)
 	}
 }
 
+void RoyalSocietyApp::findClickedRectangle(int x, int y)
+{
+	Node* current = sentinel->prev_;
+	int xcoord, ycoord, length, width;
+
+	while(current != sentinel)
+	{
+		xcoord = current->shape->x;
+		ycoord = current->shape->y;
+		length = current->shape->radius * 1.5 + xcoord;
+		width = current->shape->radius + ycoord;
+
+		if(x > xcoord && x < width && x > ycoord && x < length)
+		{
+			current->insert_after(current, sentinel);
+			current = sentinel;
+		}
+		current = current->prev_;
+	}
+}
+
+void RoyalSocietyApp::ascend(Node* current)
+{
+	current->next_->prev_ = current->prev_;
+	current->prev_->next_ = current->next_;
+
+}
 
 void RoyalSocietyApp::mouseDown( MouseEvent event )
 {
@@ -185,12 +214,17 @@ void RoyalSocietyApp::mouseDown( MouseEvent event )
 	{
 		drawRectangle(surfaceArray, newNode->shape->x, newNode->shape->y, newNode->shape->radius * 1.5, newNode->shape->radius);
 	}
+
+	if(event.isLeftDown())
+	{
+	//	findClickedRectangle(event.getX(), event.getY());
+	}
 }
+
 
 void RoyalSocietyApp::keyDown(KeyEvent event)
 {
 	char yup = event.getChar();
-	char yup2 = 'a';
 	if(yup == '/' || event.getChar() == '?')
 	{
 		if(showMenu)
@@ -214,7 +248,7 @@ void RoyalSocietyApp::update()
 	
 	if(temp == sentinel)
 	{
-		drawRectangle(surfaceArray, temp->shape->x, temp->shape->y, temp->shape->radius * 1.5, temp->shape->radius);
+		//drawRectangle(surfaceArray, temp->shape->x, temp->shape->y, temp->shape->radius * 1.5, temp->shape->radius);
 	}
 
 	while(temp != sentinel)
