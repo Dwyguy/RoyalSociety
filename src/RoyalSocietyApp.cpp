@@ -225,12 +225,12 @@ void RoyalSocietyApp::mouseDown( MouseEvent event )
 void RoyalSocietyApp::keyDown(KeyEvent event)
 {
 	char yup = event.getChar();
-	if(yup == '/' || event.getChar() == '?')
+	if(yup == '/' || yup == '?')
 	{
 		if(showMenu)
-			showMenu == false;
+			showMenu = false;
 		else
-			showMenu == true;
+			showMenu = true;
 	}
 
 	if(event.getCode() == KeyEvent::KEY_SPACE)
@@ -275,19 +275,21 @@ void RoyalSocietyApp::draw()
 	}
 	else if(greenValue > 0.0f)
 	{
-		//brightness = 0.0;
 		greenValue -= 0.01f;
 		brightness += 0.01f;
 	}
 
-	if(showMenu == false)
+	if(showMenu)
 	{
+		gl::clear(Color(0,0,0));
 		gl::drawString("Welcome to the Royal Society!", Vec2f(250.0f,100.0f),Color(brightness,greenValue,0.0f), *font);
-		gl::drawString("Press '?' to turn this menu off and on.", Vec2f(200.0f,200.0f),Color(brightness,greenValue,0.0f), *font);
+		gl::drawString("Press '?' to turn this menu off and on.", Vec2f(200.0f,150.0f),Color(brightness,greenValue,0.0f), *font);
+		gl::drawString("Click to create new shapes on the screen!", Vec2f(180.0f,200.0f),Color(brightness,greenValue,0.0f), *font);
+		gl::drawString("Want to reverse the order of the shapes? Hit spacebar.", Vec2f(100.0f,250.0f),Color(brightness,greenValue,0.0f), *font);
 	}
 	else
 	{
-		gl::clear(Color( 255, 255, 255 ));
+		gl::clear(Color(0,0,0));
 		gl::draw(*mySurface_);
 	}
 }
