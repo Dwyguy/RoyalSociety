@@ -76,8 +76,6 @@ void RoyalSocietyApp::setup()
 
 	uint8_t* surfaceArray = (*mySurface_).getData();
 	drawGradient(surfaceArray); // Doing this just to give a nice gradient background
-	//LPCWSTR msg = "Uninstallation Unsuccessful, Please Contact Admin";
-	//MessageBox(NULL,;
 
 }
 
@@ -87,6 +85,10 @@ void RoyalSocietyApp::drawRectangle(uint8_t* surfaceArray, int x1, int y1, int x
 	int endX = (x1 < x2) ? x2 : x1;
 	int startY = (y1 < y2) ? y1 : y2;
 	int endY = (y1 < y2) ? y2 : y1;
+
+	int r = rand()%255;
+	int g = rand()%255;
+	int b = rand()%255;
 
 	if(endX < 0 || endY < 0)
 		return;
@@ -104,9 +106,9 @@ void RoyalSocietyApp::drawRectangle(uint8_t* surfaceArray, int x1, int y1, int x
 		{
 			int ribbon = 3 * (x + y * surfaceSize_);
 
-			surfaceArray[ribbon] = 255;//c.r;
-			surfaceArray[ribbon + 1] = 0;//c.g;
-			surfaceArray[ribbon + 2] = 0;//c.b;
+			surfaceArray[ribbon] = r;
+			surfaceArray[ribbon + 1] = g;
+			surfaceArray[ribbon + 2] = b;
 		}
 	}
 }
@@ -169,8 +171,7 @@ void RoyalSocietyApp::mouseDown( MouseEvent event )
 {
 	uint8_t* surfaceArray = (*mySurface_).getData();
 	Node* newNode = new Node();
-	sentinel->next_ = newNode;
-	newNode->prev_ = sentinel;
+	sentinel->insert_after(newNode, newNode->shape);
 	if(sentinel->shape->type == 1)
 	{
 		drawRectangle(surfaceArray, newNode->shape->x, newNode->shape->y, newNode->shape->radius * 1.5, newNode->shape->radius);
@@ -180,10 +181,18 @@ void RoyalSocietyApp::mouseDown( MouseEvent event )
 void RoyalSocietyApp::update()
 {
 	uint8_t* surfaceArray = (*mySurface_).getData();
-	if(sentinel->shape->type == 1 || sentinel->shape->type == 2)
+
+	Node* temp = sentinel->next_;
+	while(temp != sentinel)
+	{
+		drawRectangle(surfaceArray, temp->shape->x, temp->shape->y, temp->shape->radius * 1.5, temp->shape->radius);
+		temp = temp->next_;
+	}
+
+	/*if(sentinel->shape->type == 1)
 	{
 		drawRectangle(surfaceArray, sentinel->shape->x, sentinel->shape->y, sentinel->shape->radius * 1.5, sentinel->shape->radius);
-	}
+	}*/
 }
 
 void RoyalSocietyApp::draw()

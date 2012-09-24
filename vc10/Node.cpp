@@ -9,7 +9,7 @@ using namespace std;
 Node::Node()
 {
 	next_ = prev_ = this;
-	shape = new Shape((rand()%150 + 1), (rand()%150 + 1), (rand()%100 + 1));
+	shape = new Shape((rand()%800 + 1), (rand()%600 + 1), (rand()%300 + 1));
 }
 
 void Node::insert_after(Node* current, Shape* shape)
