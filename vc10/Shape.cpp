@@ -10,9 +10,9 @@ using namespace std;
 
 Shape::Shape(int x, int y, int radius)
 {
-	shapeType = (rand()%2) + 1;
+	type = 1;
 
-	switch(shapeType)
+	switch(type)
 	{
 		case 1 : rectangle(x, y, radius);
 			break;
@@ -20,27 +20,26 @@ Shape::Shape(int x, int y, int radius)
 			break;
 	}
 
-
 }
 
-void Shape::rectangle(int x, int y, int radius)
+void Shape::rectangle(int ex, int ey, int eradius)
 {
-	x = (rand()%150) + 50;
-	y = (rand()%150) + 50;
-	radius = 0; // Radius in this case means length of the rectangle
-	shapeType = 1;
+	x = ex;
+	y = ey;
+	radius = eradius; // Radius in this case means length of the rectangle
+	//shapeType = 1;
 }
 
 void Shape::circle(int x, int y, int radius)
 {
 	// x is the radius
 	x = (rand()%100) + 50;
-	shapeType = 2;
+	type = 2;
 }
 
 void Shape::draw()
 {
-	if(shapeType == 1)
+	if(type == 1)
 	{
 	}
 }

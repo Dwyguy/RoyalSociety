@@ -1,6 +1,6 @@
 #pragma once
-#include "cinder\app\AppBasic.h"
-#include "cinder\gl\gl.h"
+//#include "cinder\app\AppBasic.h"
+//#include "cinder\gl\gl.h"
 
 class Shape
 {
@@ -14,9 +14,7 @@ public:
 	int x;
 	int y;
 	int radius;
-
-	//Color8u color;
-	
+	int type;
 
 };
 

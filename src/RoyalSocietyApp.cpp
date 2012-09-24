@@ -64,6 +64,8 @@ void RoyalSocietyApp::prepareSettings(Settings* settings)
 
 void RoyalSocietyApp::setup()
 {
+	srand(time(0));
+
 	sentinel = new Node();
 	sentinel->next_ = sentinel;
 	sentinel->prev_ = sentinel;
@@ -100,7 +102,7 @@ void RoyalSocietyApp::drawRectangle(uint8_t* surfaceArray, int x1, int y1, int x
 		{
 			int ribbon = 3 * (x + y * surfaceSize_);
 
-			surfaceArray[ribbon] = 0;//c.r;
+			surfaceArray[ribbon] = 255;//c.r;
 			surfaceArray[ribbon + 1] = 0;//c.g;
 			surfaceArray[ribbon + 2] = 0;//c.b;
 		}
@@ -163,14 +165,17 @@ void RoyalSocietyApp::drawGradient(uint8_t* surfaceArray)
 
 void RoyalSocietyApp::mouseDown( MouseEvent event )
 {
+	Node* newNode = new Node();
+	sentinel->next_ = newNode;
+	newNode->prev_ = sentinel;
 }
 
 void RoyalSocietyApp::update()
 {
 	uint8_t* surfaceArray = (*mySurface_).getData();
-	//if(sentinel->shape->shapeType == 1)
+	if(sentinel->shape->type == 1)
 	{
-		drawRectangle(surfaceArray, sentinel->shape->x, sentinel->shape->y, sentinel->shape->x + 30, sentinel->shape->y + 30);
+		drawRectangle(surfaceArray, sentinel->shape->x, sentinel->shape->y, sentinel->shape->radius * 1.5, sentinel->shape->radius);
 	}
 }
 

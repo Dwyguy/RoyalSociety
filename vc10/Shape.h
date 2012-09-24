@@ -14,10 +14,7 @@ public:
 	int x;
 	int y;
 	int radius;
-	int shapeType;
-
-	//Color8u color;
-	
+	int type;
 
 };
 
