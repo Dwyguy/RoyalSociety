@@ -45,6 +45,8 @@ class RoyalSocietyApp : public AppBasic {
 	float brightness, greenValue;
 	bool showMenu, raveMode;
 	int shift;
+	
+	bool mouseClick; // JO: added mouse click flag
 
 	static const int appWidth_ = 800;
 	static const int appHeight_ = 600;
@@ -92,6 +94,9 @@ void RoyalSocietyApp::setup()
 	greenValue = 0.0;
 	showMenu = true;
 	raveMode = false;
+	
+	mouseClick = false; // JO: initialize variable
+	
 	shift = 0;
 
 	// Initializing sentinel
@@ -183,14 +188,7 @@ void RoyalSocietyApp::ascend()
 
 void RoyalSocietyApp::mouseDown( MouseEvent event )
 {
-	uint8_t* surfaceArray = (*mySurface_).getData();
-
-	Node* newNode = new Node();
-	sentinel->insert_after(newNode, sentinel);
-	if(sentinel->shape->type == 1) // Was put in place to add different shapes, but they didn't pan out
-	{
-		drawRectangle(surfaceArray, newNode->shape->x, newNode->shape->y, newNode->shape->radius * 1.5, newNode->shape->radius);
-	}
+	mouseClick = true; // JO: set flag as true
 }
 
 
@@ -238,6 +236,26 @@ void RoyalSocietyApp::keyDown(KeyEvent event)
 
 void RoyalSocietyApp::update()
 {
+	/*
+		JO: Moved code from mouseDown(). I don't know how much it matterns what method it's in, it just made
+			more sense to me to have this in update().
+	*/
+	if(mouseClick)
+	{
+		mouseClick = false;
+		uint8_t* surfaceArray = (*mySurface_).getData();
+
+		Node* newNode = new Node();
+		sentinel->insert_after(newNode, sentinel);
+		if(sentinel->shape->type == 1) // Was put in place to add different shapes, but they didn't pan out
+		{
+			/*
+				JO: Draw code should be in draw()
+			*/
+			drawRectangle(surfaceArray, newNode->shape->x, newNode->shape->y, newNode->shape->radius * 1.5, newNode->shape->radius);
+		}
+	}
+	
 	uint8_t* surfaceArray = (*mySurface_).getData();
 	
 	Node* temp = sentinel->next_;
@@ -245,6 +263,10 @@ void RoyalSocietyApp::update()
 	// Shift is added to create cool effects
 	while(temp != sentinel)
 	{
+		/*
+			JO: Draw code should be in draw(). It works fine this way, it's just standard to have all draw
+				methods executed in draw().
+		*/
 		drawRectangle(surfaceArray, temp->shape->x + shift, temp->shape->y + shift, temp->shape->radius * 1.5 + shift, temp->shape->radius);
 		temp = temp->next_;
 	}
