@@ -18,7 +18,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "Resources.h"
-#include "cinder\ImageIo.h"
+#include "cinder/ImageIo.h"
 #include "cinder/CinderResources.h"
 #include "cinder/app/KeyEvent.h"
 #include "cinder/Text.h"
