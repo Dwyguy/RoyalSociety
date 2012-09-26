@@ -194,6 +194,11 @@ void RoyalSocietyApp::mouseDown( MouseEvent event )
 
 void RoyalSocietyApp::keyDown(KeyEvent event)
 {
+	/*
+		JO: keyDown should do as little code as possible, with most of this being executed in update().
+			It seems kinda pointless since it's only one line of code per key check, but I think it's standard
+			to have this stuff in update(). I did this exact thing in my code too.
+	*/
 	// Satisfies goal B
 	// Pressing / or ? brings up or hides the menu
 	if(event.getChar() == '/' || event.getChar() == '?')
